@@ -126,19 +126,21 @@ class _FirstPageState extends State<FirstPage> {
             Spacer(),
 
             /// CALCULATE BUTTON
-            Button(onTap: () {
-              calculateBMI();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SecondPage(
-                    bmi: bmi,
-                    bmiCategory: bmiCategory,
-                    bmiRange: bmiRange,
-                  ),
-                ),
-              );
-            }),
+            Button(
+                text: 'CALCULATE YOUR BMI',
+                onTap: () {
+                  calculateBMI();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SecondPage(
+                        bmi: bmi,
+                        bmiCategory: bmiCategory,
+                        bmiRange: bmiRange,
+                      ),
+                    ),
+                  );
+                }),
           ],
         ),
       ),

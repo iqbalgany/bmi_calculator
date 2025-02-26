@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
 class Button extends StatelessWidget {
+  final String text;
   final GestureTapCallback onTap;
-  const Button({super.key, required this.onTap});
+  const Button({
+    super.key,
+    required this.onTap,
+    required this.text,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +24,7 @@ class Button extends StatelessWidget {
         child: Align(
           alignment: Alignment.center,
           child: Text(
-            'CALCULATE YOUR BMI',
+            text,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,

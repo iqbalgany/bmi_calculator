@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class WeightAgeWidget extends StatefulWidget {
@@ -17,6 +19,7 @@ class WeightAgeWidget extends StatefulWidget {
 
 class _WeightAgeWidgetState extends State<WeightAgeWidget> {
   late int number = widget.number;
+  Timer? _timer;
 
   void _increment() {
     setState(() {
@@ -26,10 +29,30 @@ class _WeightAgeWidgetState extends State<WeightAgeWidget> {
   }
 
   void _decrement() {
-    setState(() {
-      number--;
-    });
+    if (number > 0) {
+      setState(() {
+        number--;
+      });
+    }
     widget.onChanged?.call(number);
+  }
+
+  void _startIncrementing() {
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
+      _increment();
+    });
+  }
+
+  void _startDecrementing() {
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
+      _decrement();
+    });
+  }
+
+  void _stopCounting() {
+    _timer?.cancel();
   }
 
   @override
@@ -42,8 +65,8 @@ class _WeightAgeWidgetState extends State<WeightAgeWidget> {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 20),
           Text(
             widget.text,
             style: TextStyle(
@@ -52,7 +75,7 @@ class _WeightAgeWidgetState extends State<WeightAgeWidget> {
             ),
           ),
           Text(
-            "${number}",
+            "$number",
             style: TextStyle(
               fontSize: 60,
               fontWeight: FontWeight.bold,
@@ -61,28 +84,38 @@ class _WeightAgeWidgetState extends State<WeightAgeWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Color(0xff272a4e),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  onPressed: () => _increment(),
-                  icon: Icon(
-                    Icons.add,
+              GestureDetector(
+                onTapDown: (_) => _startIncrementing(),
+                onTapUp: (_) => _stopCounting(),
+                onTapCancel: _stopCounting,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xff272a4e),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: () => _increment(),
+                    icon: Icon(
+                      Icons.add,
+                    ),
                   ),
                 ),
               ),
               SizedBox(width: 15),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color(0xff272a4e),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  onPressed: () => _decrement(),
-                  icon: Icon(
-                    Icons.remove,
+              GestureDetector(
+                onTapDown: (_) => _startDecrementing(),
+                onTapUp: (_) => _stopCounting(),
+                onTapCancel: _stopCounting,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xff272a4e),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    onPressed: () => _decrement(),
+                    icon: Icon(
+                      Icons.remove,
+                    ),
                   ),
                 ),
               ),

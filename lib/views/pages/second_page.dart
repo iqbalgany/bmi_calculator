@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/views/pages/third_page.dart';
 import 'package:flutter_application_1/views/widgets/button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SecondPage extends StatefulWidget {
   final double bmi;
@@ -17,6 +21,33 @@ class SecondPage extends StatefulWidget {
 }
 
 class _SecondPageState extends State<SecondPage> {
+  Future<void> setPrefrence() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    List<Map<String, dynamic>> bmiDataList = [];
+
+    if (prefs.containsKey('bmi_data_list')) {
+      final String? storedData = prefs.getString('bmi_data_list');
+      if (storedData != null) {
+        final List<dynamic> decodedData = jsonDecode(storedData);
+        bmiDataList =
+            decodedData.map((e) => Map<String, dynamic>.from(e)).toList();
+      }
+    }
+
+    bmiDataList.add({
+      'bmi': widget.bmi.toStringAsFixed(1),
+      'bmi_category': widget.bmiCategory,
+      'bmi_range': widget.bmiRange,
+    });
+
+    await prefs.setString('bmi_data_list', jsonEncode(bmiDataList));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Nilai BMI Tersimpan')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,18 +122,21 @@ class _SecondPageState extends State<SecondPage> {
                       ),
                     ),
                     SizedBox(height: 30),
-                    Container(
-                      width: MediaQuery.sizeOf(context).width - 170,
-                      height: 70,
-                      decoration: BoxDecoration(
-                        color: Color(0xff191a2e),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'SAVE RESULT',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                    GestureDetector(
+                      onTap: () => setPrefrence(),
+                      child: Container(
+                        width: MediaQuery.sizeOf(context).width - 170,
+                        height: 70,
+                        decoration: BoxDecoration(
+                          color: Color(0xff191a2e),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'SAVE RESULT',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
                           ),
                         ),
                       ),
@@ -113,9 +147,22 @@ class _SecondPageState extends State<SecondPage> {
             ),
           ),
           Spacer(),
-          Button(onTap: () {
-            Navigator.pop(context);
-          }),
+          Button(
+              text: 'GO TO HISTORY',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ThirdPage(),
+                  ),
+                );
+              }),
+          // SizedBox(height: 5),
+          Button(
+              text: 'RE-CALCULATE YOUR BMI',
+              onTap: () {
+                Navigator.pop(context);
+              }),
         ],
       ),
     );
