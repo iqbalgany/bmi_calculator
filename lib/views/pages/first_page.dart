@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/views/pages/second_page.dart';
-import 'package:flutter_application_1/views/widgets/button.dart';
+import 'package:flutter_application_1/views/widgets/custom_button.dart';
+import 'package:flutter_application_1/views/widgets/custom_drawer.dart';
 import 'package:flutter_application_1/views/widgets/gender_widget.dart';
 import 'package:flutter_application_1/views/widgets/weight_age_widget.dart';
 
@@ -55,161 +57,164 @@ class _FirstPageState extends State<FirstPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Color(0xff0e1438),
-        appBar: AppBar(
-          backgroundColor: Color(0xff12173a),
-          leading: Icon(Icons.menu),
-          title: Text('BMI CALCULATOR'),
-          centerTitle: true,
-          elevation: 2,
-        ),
-        body: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      backgroundColor: Color(0xff0e1438),
+      appBar: AppBar(
+        backgroundColor: Color(0xff12173a),
+        title: Text('BMI CALCULATOR'),
+        centerTitle: true,
+        elevation: 2,
+      ),
+      drawer: Drawer(
+        child: CustomDrawer(),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
               children: [
-                /// GENDER
-                GestureDetector(
-                  onTap: () => _selectGender(1),
-                  child: GenderWidget(
-                    index: 1,
-                    icons: Icons.male,
-                    text: 'MALE',
-                    selectedIndex: selectedIndex,
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => _selectGender(1),
+                        child: GenderWidget(
+                          index: 1,
+                          icons: Icons.male,
+                          text: 'MALE',
+                          selectedIndex: selectedIndex,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => _selectGender(2),
+                        child: GenderWidget(
+                          index: 2,
+                          icons: Icons.female,
+                          text: 'FEMALE',
+                          selectedIndex: selectedIndex,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () => _selectGender(2),
-                  child: GenderWidget(
-                    index: 2,
-                    icons: Icons.female,
-                    text: 'FEMALE',
-                    selectedIndex: selectedIndex,
-                  ),
+                SizedBox(height: 20),
+
+                /// HEIGHT
+                height(),
+                SizedBox(height: 20),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: WeightAgeWidget(
+                        text: 'WEIGHT',
+                        onChanged: (value) {
+                          setState(() {
+                            _weight = value;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: WeightAgeWidget(
+                        text: 'AGE',
+                      ),
+                    ),
+                  ],
+                  // / AGE
                 ),
               ],
             ),
-            SizedBox(height: 20),
+          ),
+          Spacer(),
 
-            /// HEIGHT
-            height(),
-            SizedBox(height: 20),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  /// WEIGHT
-                  WeightAgeWidget(
-                    text: 'WEIGHT',
-                    onChanged: (value) {
-                      setState(() {
-                        _weight = value;
-                      });
-                    },
-                  ),
-                  SizedBox(width: 20),
-
-                  /// AGE
-                  WeightAgeWidget(
-                    text: 'AGE',
-                  ),
-                ],
-              ),
-            ),
-            Spacer(),
-
-            /// CALCULATE BUTTON
-            Button(
-                text: 'CALCULATE YOUR BMI',
-                onTap: () {
-                  calculateBMI();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SecondPage(
-                        bmi: bmi,
-                        bmiCategory: bmiCategory,
-                        bmiRange: bmiRange,
-                      ),
+          /// CALCULATE BUTTON
+          CustomButton(
+              text: 'CALCULATE YOUR BMI',
+              onTap: () {
+                calculateBMI();
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => SecondPage(
+                      bmi: bmi,
+                      bmiCategory: bmiCategory,
+                      bmiRange: bmiRange,
                     ),
-                  );
-                }),
-          ],
-        ),
+                  ),
+                );
+              }),
+        ],
       ),
     );
   }
 
   Widget height() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Color(0xff141a3c),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          children: [
-            SizedBox(height: 10),
-            Text(
-              'HEIGHT',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey,
-              ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xff141a3c),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Column(
+        children: [
+          SizedBox(height: 10),
+          Text(
+            'HEIGHT',
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.grey,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "${_height.toInt()}",
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "${_height.toInt()}",
+                style: TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  'cm',
                   style: TextStyle(
-                    fontSize: 50,
-                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Text(
-                    'cm',
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: Colors.white,
-                inactiveTrackColor: Colors.grey.shade700,
-                trackHeight: 2.5,
-                thumbColor: Colors.pink,
-                overlayColor: Colors.pink.withOpacity(0.2),
-                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
               ),
-              child: Slider(
-                value: _height,
-                min: 0,
-                max: 200,
-                onChanged: (value) {
-                  setState(() {
-                    _height = value;
-                  });
-                },
-              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: Colors.white,
+              inactiveTrackColor: Colors.grey.shade700,
+              trackHeight: 2.5,
+              thumbColor: Colors.pink,
+              overlayColor: Colors.pink.withOpacity(0.2),
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
             ),
-            SizedBox(height: 30),
-          ],
-        ),
+            child: Slider(
+              value: _height,
+              min: 0,
+              max: 200,
+              onChanged: (value) {
+                setState(() {
+                  _height = value;
+                });
+              },
+            ),
+          ),
+          SizedBox(height: 30),
+        ],
       ),
     );
   }

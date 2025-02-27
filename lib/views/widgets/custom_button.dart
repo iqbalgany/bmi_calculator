@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
-class Button extends StatelessWidget {
+class CustomButton extends StatelessWidget {
   final String text;
   final GestureTapCallback onTap;
-  const Button({
+  final double? width;
+
+  const CustomButton({
     super.key,
     required this.onTap,
     required this.text,
+    this.width = double.infinity,
   });
 
   @override
@@ -14,12 +17,10 @@ class Button extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        width: double.infinity,
         height: 70,
+        width: width,
         decoration: BoxDecoration(
-          color: Color(
-            0xffff0067,
-          ),
+          color: Color(0xffff0067),
         ),
         child: Align(
           alignment: Alignment.center,

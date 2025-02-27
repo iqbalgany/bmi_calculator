@@ -59,10 +59,10 @@ class _WeightAgeWidgetState extends State<WeightAgeWidget> {
   Widget build(BuildContext context) {
     return Container(
       height: 250,
-      width: 150,
+      width: MediaQuery.sizeOf(context).width,
       decoration: BoxDecoration(
         color: Color(0xff141a3c),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

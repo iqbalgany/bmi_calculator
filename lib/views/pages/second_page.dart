@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/views/pages/third_page.dart';
-import 'package:flutter_application_1/views/widgets/button.dart';
+import 'package:flutter_application_1/views/widgets/custom_button.dart';
+import 'package:flutter_application_1/views/widgets/custom_drawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SecondPage extends StatefulWidget {
@@ -21,7 +21,7 @@ class SecondPage extends StatefulWidget {
 }
 
 class _SecondPageState extends State<SecondPage> {
-  Future<void> setPrefrence() async {
+  Future<void> setPreference() async {
     final prefs = await SharedPreferences.getInstance();
 
     List<Map<String, dynamic>> bmiDataList = [];
@@ -39,12 +39,16 @@ class _SecondPageState extends State<SecondPage> {
       'bmi': widget.bmi.toStringAsFixed(1),
       'bmi_category': widget.bmiCategory,
       'bmi_range': widget.bmiRange,
+      'timestamp': DateTime.now().toIso8601String(),
     });
 
     await prefs.setString('bmi_data_list', jsonEncode(bmiDataList));
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Nilai BMI Tersimpan')),
+      SnackBar(
+        content: Text('Nilai BMI Tersimpan'),
+        duration: Duration(milliseconds: 100),
+      ),
     );
   }
 
@@ -54,10 +58,12 @@ class _SecondPageState extends State<SecondPage> {
       backgroundColor: Color(0xff0e1438),
       appBar: AppBar(
         backgroundColor: Color(0xff12173a),
-        leading: Icon(Icons.menu),
         title: Text('BMI CALCULATOR'),
         centerTitle: true,
         elevation: 2,
+      ),
+      drawer: Drawer(
+        child: CustomDrawer(),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +85,7 @@ class _SecondPageState extends State<SecondPage> {
               width: MediaQuery.sizeOf(context).width,
               decoration: BoxDecoration(
                 color: Color(0xff1d1f33),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(5),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 40),
@@ -98,7 +104,7 @@ class _SecondPageState extends State<SecondPage> {
                     Text(
                       widget.bmi.toStringAsFixed(1),
                       style: TextStyle(
-                        fontSize: 120,
+                        fontSize: 100,
                       ),
                     ),
                     Text(
@@ -116,14 +122,14 @@ class _SecondPageState extends State<SecondPage> {
                     ),
                     SizedBox(height: 20),
                     Text(
-                      'You have a ${widget.bmiCategory} body',
+                      'You have a ${widget.bmiCategory} body weight.',
                       style: TextStyle(
-                        fontSize: 25,
+                        fontSize: 20,
                       ),
                     ),
                     SizedBox(height: 30),
                     GestureDetector(
-                      onTap: () => setPrefrence(),
+                      onTap: () => setPreference(),
                       child: Container(
                         width: MediaQuery.sizeOf(context).width - 170,
                         height: 70,
@@ -147,22 +153,11 @@ class _SecondPageState extends State<SecondPage> {
             ),
           ),
           Spacer(),
-          Button(
-              text: 'GO TO HISTORY',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ThirdPage(),
-                  ),
-                );
-              }),
-          // SizedBox(height: 5),
-          Button(
-              text: 'RE-CALCULATE YOUR BMI',
+          CustomButton(
+              text: 'RE-CALCULATE\n YOUR BMI',
               onTap: () {
                 Navigator.pop(context);
-              }),
+              })
         ],
       ),
     );

@@ -19,11 +19,11 @@ class GenderWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 20),
       child: Container(
-        width: 150,
+        width: MediaQuery.sizeOf(context).width,
         height: 150,
         decoration: BoxDecoration(
           color: Color(0xff272a4e),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(5),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
