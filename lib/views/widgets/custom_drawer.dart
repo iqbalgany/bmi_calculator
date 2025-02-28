@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/views/pages/first_page.dart';
-import 'package:flutter_application_1/views/pages/third_page.dart';
+import 'package:flutter_application_1/views/pages/calculate_page.dart';
+import 'package:flutter_application_1/views/pages/history_page.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -47,7 +47,7 @@ class CustomDrawer extends StatelessWidget {
             Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (context) => FirstPage(),
+                builder: (context) => CalculatePage(),
               ),
             );
           },
@@ -61,7 +61,7 @@ class CustomDrawer extends StatelessWidget {
             Navigator.push(
               context,
               CupertinoPageRoute(
-                builder: (context) => ThirdPage(),
+                builder: (context) => HistoryPage(),
               ),
             );
           },

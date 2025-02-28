@@ -1,19 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/views/pages/second_page.dart';
+import 'package:flutter_application_1/views/pages/result_page.dart';
 import 'package:flutter_application_1/views/widgets/custom_button.dart';
 import 'package:flutter_application_1/views/widgets/custom_drawer.dart';
 import 'package:flutter_application_1/views/widgets/gender_widget.dart';
 import 'package:flutter_application_1/views/widgets/weight_age_widget.dart';
 
-class FirstPage extends StatefulWidget {
-  const FirstPage({super.key});
+class CalculatePage extends StatefulWidget {
+  const CalculatePage({super.key});
 
   @override
-  State<FirstPage> createState() => _FirstPageState();
+  State<CalculatePage> createState() => _CalculatePageState();
 }
 
-class _FirstPageState extends State<FirstPage> {
+class _CalculatePageState extends State<CalculatePage> {
   double _height = 100;
   int _weight = 50;
   int selectedIndex = 0;
@@ -142,7 +142,7 @@ class _FirstPageState extends State<FirstPage> {
                 Navigator.push(
                   context,
                   CupertinoPageRoute(
-                    builder: (context) => SecondPage(
+                    builder: (context) => ResultPage(
                       bmi: bmi,
                       bmiCategory: bmiCategory,
                       bmiRange: bmiRange,

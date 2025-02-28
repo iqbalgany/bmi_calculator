@@ -1,15 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/views/widgets/custom_button.dart';
 import 'package:flutter_application_1/views/widgets/custom_drawer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class SecondPage extends StatefulWidget {
+import '../../services/shared_preference_service.dart';
+
+class ResultPage extends StatefulWidget {
   final double bmi;
   final String bmiCategory;
   final String bmiRange;
-  const SecondPage({
+  const ResultPage({
     super.key,
     required this.bmi,
     required this.bmiCategory,
@@ -17,39 +16,18 @@ class SecondPage extends StatefulWidget {
   });
 
   @override
-  State<SecondPage> createState() => _SecondPageState();
+  State<ResultPage> createState() => _ResultPageState();
 }
 
-class _SecondPageState extends State<SecondPage> {
-  Future<void> setPreference() async {
-    final prefs = await SharedPreferences.getInstance();
+class _ResultPageState extends State<ResultPage> {
+  final BMIService _bmiService = BMIService();
 
-    List<Map<String, dynamic>> bmiDataList = [];
-
-    if (prefs.containsKey('bmi_data_list')) {
-      final String? storedData = prefs.getString('bmi_data_list');
-      if (storedData != null) {
-        final List<dynamic> decodedData = jsonDecode(storedData);
-        bmiDataList =
-            decodedData.map((e) => Map<String, dynamic>.from(e)).toList();
-      }
-    }
-
-    bmiDataList.add({
-      'bmi': widget.bmi.toStringAsFixed(1),
-      'bmi_category': widget.bmiCategory,
-      'bmi_range': widget.bmiRange,
-      'timestamp': DateTime.now().toIso8601String(),
-    });
-
-    await prefs.setString('bmi_data_list', jsonEncode(bmiDataList));
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Nilai BMI Tersimpan'),
-        duration: Duration(milliseconds: 100),
-      ),
-    );
+  Future<void> _saveBMI() async {
+    await _bmiService.saveBMIData(
+        bmi: widget.bmi,
+        bmiCategory: widget.bmiCategory,
+        bmiRange: widget.bmiRange,
+        context: context);
   }
 
   @override
@@ -129,7 +107,7 @@ class _SecondPageState extends State<SecondPage> {
                     ),
                     SizedBox(height: 30),
                     GestureDetector(
-                      onTap: () => setPreference(),
+                      onTap: () => _saveBMI(),
                       child: Container(
                         width: MediaQuery.sizeOf(context).width - 170,
                         height: 70,

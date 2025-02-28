@@ -1,45 +1,44 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/views/pages/first_page.dart';
+import 'package:flutter_application_1/models/bmi_history_model.dart';
+import 'package:flutter_application_1/services/shared_preference_service.dart';
+import 'package:flutter_application_1/views/pages/calculate_page.dart';
+import 'package:flutter_application_1/views/pages/result_page.dart';
 import 'package:flutter_application_1/views/widgets/custom_drawer.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class ThirdPage extends StatefulWidget {
-  const ThirdPage({super.key});
+class HistoryPage extends StatefulWidget {
+  const HistoryPage({super.key});
 
   @override
-  State<ThirdPage> createState() => _ThirdPageState();
+  State<HistoryPage> createState() => _HistoryPageState();
 }
 
-class _ThirdPageState extends State<ThirdPage> {
-  List<Map<String, dynamic>> bmiDataList = [];
+class _HistoryPageState extends State<HistoryPage> {
+  final BMIService _bmiService = BMIService();
+  List<BMIHistory> bmiDataList = [];
   bool isDescending = true;
 
   @override
   void initState() {
     super.initState();
-    getPreference();
+    _loadBMIData();
   }
 
-  Future<void> getPreference() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    if (prefs.containsKey('bmi_data_list')) {
-      final String? storedData = prefs.getString('bmi_data_list');
-      if (storedData != null) {
-        final List<dynamic> decodedData = jsonDecode(storedData);
-        setState(() {
-          bmiDataList =
-              decodedData.map((e) => Map<String, dynamic>.from(e)).toList();
-        });
-      }
-    }
+  Future<void> _loadBMIData() async {
+    List<BMIHistory> data = await _bmiService.loadBMIData();
+    setState(() {
+      bmiDataList = data;
+    });
   }
 
-  Future<void> removeData(int index) async {
+  void _sortData(bool descending) {
+    setState(() {
+      bmiDataList = _bmiService.sortBMIData(bmiDataList, descending);
+    });
+  }
+
+  Future<void> _removeData(int index) async {
     showDialog(
       context: context,
       builder: (context) {
@@ -60,19 +59,9 @@ class _ThirdPageState extends State<ThirdPage> {
             ),
             TextButton(
               onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
+                await _bmiService.removeBMIData(index: index);
 
-                final String? storedData = prefs.getString('bmi_data_list');
-                List<dynamic> bmiDataList = jsonDecode(storedData!);
-
-                bmiDataList.removeAt(index);
-                await prefs.setString('bmi_data_list', jsonEncode(bmiDataList));
-
-                setState(() {
-                  this.bmiDataList = bmiDataList
-                      .map((e) => Map<String, dynamic>.from(e))
-                      .toList();
-                });
+                _loadBMIData();
                 Navigator.pop(context);
               },
               child: Text(
@@ -86,19 +75,6 @@ class _ThirdPageState extends State<ThirdPage> {
         );
       },
     );
-  }
-
-  void sortData(bool descending) {
-    setState(() {
-      bmiDataList.sort(
-        (a, b) {
-          DateTime timeA = DateTime.parse(a['timestamp']);
-          DateTime timeB = DateTime.parse(b['timestamp']);
-
-          return descending ? timeB.compareTo(timeA) : timeA.compareTo(timeB);
-        },
-      );
-    });
   }
 
   @override
@@ -115,7 +91,7 @@ class _ThirdPageState extends State<ThirdPage> {
             onPressed: () {
               setState(() {
                 isDescending = !isDescending;
-                sortData(isDescending);
+                _sortData(isDescending);
               });
             },
           ),
@@ -130,11 +106,22 @@ class _ThirdPageState extends State<ThirdPage> {
         itemCount: bmiDataList.length,
         itemBuilder: (context, index) {
           final item = bmiDataList[index];
-          final DateTime timestamp = DateTime.parse(item['timestamp']);
+          final DateTime timestamp = item.timestamp;
           final String formattedDate =
-              DateFormat('EEEE, d MMMM yyyy HH:mm', 'en_US').format(timestamp);
+              DateFormat('EEEE, d MMMM yyyy HH:mm', 'id_ID').format(timestamp);
           return GestureDetector(
-            onLongPress: () => removeData(index),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ResultPage(
+                      bmi: item.bmi,
+                      bmiCategory: item.bmiCategory,
+                      bmiRange: item.bmiRange,
+                    ),
+                  ));
+            },
+            onLongPress: () => _removeData(index),
             child: Column(
               children: [
                 Padding(
@@ -175,7 +162,7 @@ class _ThirdPageState extends State<ThirdPage> {
                                 ),
                               ),
                               Text(
-                                '${item['bmi']}',
+                                '${item.bmi}',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
@@ -196,7 +183,7 @@ class _ThirdPageState extends State<ThirdPage> {
                                 ),
                               ),
                               Text(
-                                '${item['bmi_category']}',
+                                item.bmiCategory,
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
@@ -237,7 +224,7 @@ class _ThirdPageState extends State<ThirdPage> {
           Navigator.push(
             context,
             CupertinoPageRoute(
-              builder: (context) => FirstPage(),
+              builder: (context) => CalculatePage(),
             ),
           );
         },
